@@ -1,4 +1,4 @@
-package thrones.game;
+package thrones.game.GoTCardRules;
 
 public enum Rank {
     // Reverse order of rank importance (see rankGreater() below)

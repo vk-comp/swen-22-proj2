@@ -1,4 +1,4 @@
-package thrones.game;
+package thrones.game.GoTCardRules;
 
 public enum Suit {
     SPADES(GoTSuit.DEFENCE),

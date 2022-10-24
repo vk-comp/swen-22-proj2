@@ -4,12 +4,12 @@ package thrones.game;
 
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
+import thrones.game.GoTCardRules.*;
+
 
 import java.awt.Color;
 import java.awt.Font;
-import java.io.FileReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class GameOfThrones extends CardGame {
@@ -17,7 +17,8 @@ public class GameOfThrones extends CardGame {
     /*
     Canonical String representations of Suit, Rank, Card, and Hand
     */
-    String canonical(Suit s) { return s.toString().substring(0, 1); }
+    private Canonical canonical = new Canonical();
+    /*String canonical(Suit s) { return s.toString().substring(0, 1); }
 
     String canonical(Rank r) {
         switch (r) {
@@ -32,7 +33,7 @@ public class GameOfThrones extends CardGame {
 
     String canonical(Hand h) {
         return "[" + h.getCardList().stream().map(this::canonical).collect(Collectors.joining(",")) + "]";
-    }
+    }*/
     static public int seed;
     static Random random;
 
@@ -168,7 +169,7 @@ public class GameOfThrones extends CardGame {
 
         for (int i = 0; i < nbPlayers; i++) {
             hands[i].sort(Hand.SortType.SUITPRIORITY, true);
-            System.out.println("hands[" + i + "]: " + canonical(hands[i]));
+            System.out.println("hands[" + i + "]: " + canonical.canonical(hands[i]));
         }
 
         for (final Hand currentHand : hands) {
@@ -367,7 +368,7 @@ public class GameOfThrones extends CardGame {
 
             int pileIndex = playerIndex % 2;
             assert selected.isPresent() : " Pass returned on selection of character.";
-            System.out.println("Player " + playerIndex + " plays " + canonical(selected.get()) + " on pile " + pileIndex);
+            System.out.println("Player " + playerIndex + " plays " + canonical.canonical(selected.get()) + " on pile " + pileIndex);
             selected.get().setVerso(false);
             selected.get().transfer(piles[pileIndex], true); // transfer to pile (includes graphic effect)
             updatePileRanks();
@@ -387,7 +388,7 @@ public class GameOfThrones extends CardGame {
             }
 
             if (selected.isPresent()) {
-                setStatusText("Selected: " + canonical(selected.get()) + ". Player" + nextPlayer + " select a pile to play the card.");
+                setStatusText("Selected: " + canonical.canonical(selected.get()) + ". Player" + nextPlayer + " select a pile to play the card.");
                 if (humanPlayers[nextPlayer]) {
                     waitForPileSelection();
                 } else {
@@ -396,7 +397,7 @@ public class GameOfThrones extends CardGame {
                 if (piles[selectedPileIndex].getNumberOfCards() == 1 && ((Suit) selected.get().getSuit()).isMagic() ){
                     continue;
                 }
-                System.out.println("Player " + nextPlayer + " plays " + canonical(selected.get()) + " on pile " + selectedPileIndex);
+                System.out.println("Player " + nextPlayer + " plays " + canonical.canonical(selected.get()) + " on pile " + selectedPileIndex);
                 selected.get().setVerso(false);
                 selected.get().transfer(piles[selectedPileIndex], true); // transfer to pile (includes graphic effect)
                 updatePileRanks();
@@ -411,9 +412,9 @@ public class GameOfThrones extends CardGame {
         updatePileRanks();
         int[] pile0Ranks = calculatePileRanks(0);
         int[] pile1Ranks = calculatePileRanks(1);
-        System.out.println("piles[0]: " + canonical(piles[0]));
+        System.out.println("piles[0]: " + canonical.canonical(piles[0]));
         System.out.println("piles[0] is " + "Attack: " + pile0Ranks[ATTACK_RANK_INDEX] + " - Defence: " + pile0Ranks[DEFENCE_RANK_INDEX]);
-        System.out.println("piles[1]: " + canonical(piles[1]));
+        System.out.println("piles[1]: " + canonical.canonical(piles[1]));
         System.out.println("piles[1] is " + "Attack: " + pile1Ranks[ATTACK_RANK_INDEX] + " - Defence: " + pile1Ranks[DEFENCE_RANK_INDEX]);
         Rank pile0CharacterRank = (Rank) piles[0].getCardList().get(0).getRank();
         Rank pile1CharacterRank = (Rank) piles[1].getCardList().get(0).getRank();
