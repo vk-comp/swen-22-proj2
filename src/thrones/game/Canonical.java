@@ -8,6 +8,7 @@ import thrones.game.GoTCardRules.*;
 import java.util.stream.Collectors;
 
 public class Canonical {
+
     public String canonical(Suit s) { return s.toString().substring(0, 1); }
 
     public String canonical(Rank r) {

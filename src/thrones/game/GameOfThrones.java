@@ -36,48 +36,6 @@ public class GameOfThrones extends CardGame {
     }*/
     static public int seed;
     static Random random;
-
-    // return random Card from Hand
-    public static Card randomCard(Hand hand) {
-        assert !hand.isEmpty() : " random card from empty hand.";
-        int x = random.nextInt(hand.getNumberOfCards());
-        return hand.get(x);
-    }
-
-    private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
-        Hand pack = deck.toHand(false);
-        assert pack.getNumberOfCards() == 52 : " Starting pack is not 52 cards.";
-        // Remove 4 Aces
-        List<Card> aceCards = pack.getCardsWithRank(Rank.ACE);
-        for (Card card : aceCards) {
-            card.removeFromHand(false);
-        }
-        assert pack.getNumberOfCards() == 48 : " Pack without aces is not 48 cards.";
-        // Give each player 3 heart cards
-        for (int i = 0; i < nbPlayers; i++) {
-            for (int j = 0; j < 3; j++) {
-                List<Card> heartCards = pack.getCardsWithSuit(Suit.HEARTS);
-                int x = random.nextInt(heartCards.size());
-                Card randomCard = heartCards.get(x);
-                randomCard.removeFromHand(false);
-                hands[i].insert(randomCard, false);
-            }
-        }
-        assert pack.getNumberOfCards() == 36 : " Pack without aces and hearts is not 36 cards.";
-        // Give each player 9 of the remaining cards
-        for (int i = 0; i < nbCardsPerPlayer; i++) {
-            for (int j = 0; j < nbPlayers; j++) {
-                assert !pack.isEmpty() : " Pack has prematurely run out of cards.";
-                Card dealt = randomCard(pack);
-                dealt.removeFromHand(false);
-                hands[j].insert(dealt, false);
-            }
-        }
-        for (int j = 0; j < nbPlayers; j++) {
-            assert hands[j].getNumberOfCards() == 12 : " Hand does not have twelve cards.";
-        }
-    }
-
     private final String version = "1.0";
     public final int nbPlayers = 4;
     public final int nbStartCards = 9;
@@ -85,7 +43,7 @@ public class GameOfThrones extends CardGame {
     public final int nbRounds = 3;
     private final int handWidth = 400;
     private final int pileWidth = 40;
-    private Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
+    // private Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
     private final Location[] handLocations = {
             new Location(350, 625),
             new Location(75, 350),
@@ -113,6 +71,7 @@ public class GameOfThrones extends CardGame {
     private final int watchingTime = 5000;
     private Hand[] hands;
     private Hand[] piles;
+    private PileController pileController = new PileController();
     private final String[] playerTeams = { "[Players 0 & 2]", "[Players 1 & 3]"};
     private int nextStartingPlayer = random.nextInt(nbPlayers);
 
@@ -160,12 +119,14 @@ public class GameOfThrones extends CardGame {
     private final int UNDEFINED_INDEX = -1;
     private final int ATTACK_RANK_INDEX = 0;
     private final int DEFENCE_RANK_INDEX = 1;
+
+    private CardGameFacade cardGameFacade = new CardGameFacade();
     private void setupGame() {
         hands = new Hand[nbPlayers];
         for (int i = 0; i < nbPlayers; i++) {
-            hands[i] = new Hand(deck);
+            hands[i] = new Hand(cardGameFacade.getDeck());
         }
-        dealingOut(hands, nbPlayers, nbStartCards);
+        cardGameFacade.dealingOut(hands, nbPlayers, nbStartCards);
 
         for (int i = 0; i < nbPlayers; i++) {
             hands[i].sort(Hand.SortType.SUITPRIORITY, true);
@@ -204,7 +165,7 @@ public class GameOfThrones extends CardGame {
         }
         piles = new Hand[2];
         for (int i = 0; i < 2; i++) {
-            piles[i] = new Hand(deck);
+            piles[i] = new Hand(cardGameFacade.getDeck());
             piles[i].setView(this, new RowLayout(pileLocations[i], 8 * pileWidth));
             piles[i].draw();
             final Hand currentPile = piles[i];
@@ -350,7 +311,6 @@ public class GameOfThrones extends CardGame {
 
     private void executeAPlay() {
         resetPile();
-
         nextStartingPlayer = getPlayerIndex(nextStartingPlayer);
         if (hands[nextStartingPlayer].getNumberOfCardsWithSuit(Suit.HEARTS) == 0)
             nextStartingPlayer = getPlayerIndex(nextStartingPlayer + 1);
