@@ -1,5 +1,7 @@
 package thrones.game;
 
+import thrones.game.players.*;
+
 public class PlayerFactory {
 
     private static PlayerFactory instance;

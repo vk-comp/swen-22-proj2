@@ -1,4 +1,4 @@
-package thrones.game;
+package thrones.game.players;
 
 public class Team {
     private int teamNum;
