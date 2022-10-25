@@ -18,22 +18,6 @@ public class GameOfThrones extends CardGame {
     Canonical String representations of Suit, Rank, Card, and Hand
     */
     private Canonical canonical = new Canonical();
-    /*String canonical(Suit s) { return s.toString().substring(0, 1); }
-
-    String canonical(Rank r) {
-        switch (r) {
-            case ACE: case KING: case QUEEN: case JACK: case TEN:
-                return r.toString().substring(0, 1);
-            default:
-                return String.valueOf(r.getRankValue());
-        }
-    }
-
-    String canonical(Card c) { return canonical((Rank) c.getRank()) + canonical((Suit) c.getSuit()); }
-
-    String canonical(Hand h) {
-        return "[" + h.getCardList().stream().map(this::canonical).collect(Collectors.joining(",")) + "]";
-    }*/
     static public int seed;
     static Random random;
 
