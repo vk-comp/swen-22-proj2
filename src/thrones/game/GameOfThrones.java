@@ -18,22 +18,7 @@ public class GameOfThrones extends CardGame {
     Canonical String representations of Suit, Rank, Card, and Hand
     */
     private Canonical canonical = new Canonical();
-    /*String canonical(Suit s) { return s.toString().substring(0, 1); }
 
-    String canonical(Rank r) {
-        switch (r) {
-            case ACE: case KING: case QUEEN: case JACK: case TEN:
-                return r.toString().substring(0, 1);
-            default:
-                return String.valueOf(r.getRankValue());
-        }
-    }
-
-    String canonical(Card c) { return canonical((Rank) c.getRank()) + canonical((Suit) c.getSuit()); }
-
-    String canonical(Hand h) {
-        return "[" + h.getCardList().stream().map(this::canonical).collect(Collectors.joining(",")) + "]";
-    }*/
     static public int seed;
     static Random random;
     private final String version = "1.0";
@@ -43,7 +28,7 @@ public class GameOfThrones extends CardGame {
     public final int nbRounds = 3;
     private final int handWidth = 400;
     private final int pileWidth = 40;
-    // private Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
+
     private final Location[] handLocations = {
             new Location(350, 625),
             new Location(75, 350),
@@ -71,7 +56,7 @@ public class GameOfThrones extends CardGame {
     private final int watchingTime = 5000;
     private Hand[] hands;
     private Hand[] piles;
-    private PileController pileController = new PileController();
+
     private final String[] playerTeams = { "[Players 0 & 2]", "[Players 1 & 3]"};
     private int nextStartingPlayer = random.nextInt(nbPlayers);
 
