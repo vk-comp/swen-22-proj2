@@ -55,6 +55,7 @@ public class GameOfThrones extends CardGame {
     private final int watchingTime = 5000;
     private Hand[] hands;
     private Hand[] piles;
+    private PileController pileController = new PileController();
     private final String[] playerTeams = { "[Players 0 & 2]", "[Players 1 & 3]"};
     private int nextStartingPlayer = random.nextInt(nbPlayers);
 
@@ -294,7 +295,6 @@ public class GameOfThrones extends CardGame {
 
     private void executeAPlay() {
         resetPile();
-
         nextStartingPlayer = getPlayerIndex(nextStartingPlayer);
         if (hands[nextStartingPlayer].getNumberOfCardsWithSuit(Suit.HEARTS) == 0)
             nextStartingPlayer = getPlayerIndex(nextStartingPlayer + 1);
