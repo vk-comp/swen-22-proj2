@@ -22,3 +22,5 @@
 hs_err_pid*
 dist/
 out/
+bin/
+.idea/
