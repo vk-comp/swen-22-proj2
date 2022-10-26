@@ -1,4 +1,4 @@
-package thrones.game.factory;
+package thrones.game;
 
 import thrones.game.players.*;
 
@@ -19,16 +19,16 @@ public class PlayerFactory {
         return instance;
     }
 
-    public Player makePlayer(String type, int playerNumber) {
+    public Player makePlayer(String type) {
         switch (type) {
-            case "H":
-                return new HumanPlayer(playerNumber);
-            case "S":
-                return new SimplePlayer(playerNumber);
-            case "SS":
-                return new SmartPlayer(playerNumber);
+            case "human":
+                return new HumanPlayer();
+            case "simple":
+                return new SimplePlayer();
+            case "smart":
+                return new SmartPlayer();
             default:
-                return new RandomPlayer(playerNumber);
+                return new RandomPlayer();
         }
     }
 

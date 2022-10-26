@@ -1,53 +1,40 @@
 package thrones.game.players;
 
+import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
+import thrones.game.GoTCardRules.Suit;
+
+import java.util.*;
+import java.util.random.RandomGenerator;
 
 public abstract class  Player {
-    private String type;
-    private int team;
-    private int score;
 
-    public int getPlayerNum() {
-        return playerNum;
+    public Player () {
+
     }
 
-    public void setPlayerNum(int playerNum) {
-        this.playerNum = playerNum;
-    }
-
-    private int playerNum;
-
-    public Hand hand;
-
-    public Hand getHand() {
-        return hand;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public Player (String type, int score, int playerNum) {
-        this.type = type;
-        if (playerNum % 2 == 0) {
-            this.team = 0;
-        } else {
-            this.team = 1;
+    public Optional<Card> selectedCard(int playerIndex, boolean isCharacter, Hand[] hands){
+        Optional<Card> selected;
+        Hand currentHand = hands[playerIndex];
+        List<Card> shortListCards = new ArrayList<>();
+        for (int i = 0; i < currentHand.getCardList().size(); i++) {
+            Card card = currentHand.getCardList().get(i);
+            Suit suit = (Suit) card.getSuit();
+            if (suit.isCharacter() == isCharacter) {
+                shortListCards.add(card);
+            }
         }
-        this.score = score;
-        this.playerNum = playerNum;
+        Random random = new Random();
+        if (shortListCards.isEmpty() || !isCharacter && random.nextInt(3) == 0) {
+            selected = Optional.empty();
+        } else {
+            selected = Optional.of(shortListCards.get(random.nextInt(shortListCards.size())));
+        }
+        return selected;
+    }
+
+    public int selectRandomPile(Optional<Card> selected, int nextPlayer, ArrayList<Card> cards) {
+        Random random = new Random();
+        return random.nextInt(2);
     }
 }

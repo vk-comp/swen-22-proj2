@@ -1,4 +1,4 @@
-package thrones.game.controller;
+package thrones.game;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
@@ -7,7 +7,7 @@ import thrones.game.GoTCardRules.*;
 
 import java.util.stream.Collectors;
 
-public class CanonicalController {
+public class Canonical {
 
     public String canonical(Suit s) { return s.toString().substring(0, 1); }
 

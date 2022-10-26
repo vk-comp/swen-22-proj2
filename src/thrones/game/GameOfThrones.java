@@ -5,9 +5,8 @@ package thrones.game;
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
 import thrones.game.GoTCardRules.*;
-import thrones.game.controller.CanonicalController;
-import thrones.game.factory.ControllerFactory;
-import thrones.game.factory.PlayerFactory;
+import thrones.game.players.HumanPlayer;
+import thrones.game.players.Player;
 
 
 import java.awt.Color;
@@ -20,9 +19,8 @@ public class GameOfThrones extends CardGame {
     /*
     Canonical String representations of Suit, Rank, Card, and Hand
     */
-    //private CanonicalController canonical = new CanonicalController();
-    private ControllerFactory controllerFactory = new ControllerFactory();
-    private CanonicalController canonical = controllerFactory.getCanonicalController();
+    private Canonical canonical = new Canonical();
+
     static public int seed;
     static Random random;
     private final String version = "1.0";
@@ -71,6 +69,14 @@ public class GameOfThrones extends CardGame {
 
     //boolean[] humanPlayers = { true, false, false, false};
     boolean[] humanPlayers = { false, false, false, false};
+    Player[] players = {null,null,null,null};
+
+    private void setupPlayer(String[] s){
+        PlayerFactory pf = new PlayerFactory();
+        for (int i=0; i<s.length;i++){
+            players[i] = pf.makePlayer(s[i]);
+        }
+    }
 
 
     private void initScore() {
@@ -170,22 +176,22 @@ public class GameOfThrones extends CardGame {
         updatePileRanks();
     }
 
-    private void pickACorrectSuit(int playerIndex, boolean isCharacter) {
-        Hand currentHand = hands[playerIndex];
-        List<Card> shortListCards = new ArrayList<>();
-        for (int i = 0; i < currentHand.getCardList().size(); i++) {
-            Card card = currentHand.getCardList().get(i);
-            Suit suit = (Suit) card.getSuit();
-            if (suit.isCharacter() == isCharacter) {
-                shortListCards.add(card);
-            }
-        }
-        if (shortListCards.isEmpty() || !isCharacter && random.nextInt(3) == 0) {
-            selected = Optional.empty();
-        } else {
-            selected = Optional.of(shortListCards.get(random.nextInt(shortListCards.size())));
-        }
-    }
+//    private void pickACorrectSuit(int playerIndex, boolean isCharacter) {
+//        Hand currentHand = hands[playerIndex];
+//        List<Card> shortListCards = new ArrayList<>();
+//        for (int i = 0; i < currentHand.getCardList().size(); i++) {
+//            Card card = currentHand.getCardList().get(i);
+//            Suit suit = (Suit) card.getSuit();
+//            if (suit.isCharacter() == isCharacter) {
+//                shortListCards.add(card);
+//            }
+//        }
+//        if (shortListCards.isEmpty() || !isCharacter && random.nextInt(3) == 0) {
+//            selected = Optional.empty();
+//        } else {
+//            selected = Optional.of(shortListCards.get(random.nextInt(shortListCards.size())));
+//        }
+//    }
 
     private void selectRandomPile() {
         selectedPileIndex = random.nextInt(2);
@@ -297,7 +303,7 @@ public class GameOfThrones extends CardGame {
     private int getPlayerIndex(int index) {
         return index % nbPlayers;
     }
-    PlayerFactory playerFactory = new PlayerFactory();
+
     private void executeAPlay() {
         resetPile();
         nextStartingPlayer = getPlayerIndex(nextStartingPlayer);
@@ -309,11 +315,12 @@ public class GameOfThrones extends CardGame {
         for (int i = 0; i < 2; i++) {
             int playerIndex = getPlayerIndex(nextStartingPlayer + i);
             setStatusText("Player " + playerIndex + " select a Heart card to play");
-            if (humanPlayers[playerIndex]) {
-                waitForCorrectSuit(playerIndex, true);
-            } else {
-                pickACorrectSuit(playerIndex, true);
+            if (!players[playerIndex].getClass().getName().equals("thrones.game.players.HumanPlayer")){
+                selected = players[playerIndex].selectedCard(playerIndex,true,hands);
+            }else {
+                waitForCorrectSuit(playerIndex,true);
             }
+
 
             int pileIndex = playerIndex % 2;
             assert selected.isPresent() : " Pass returned on selection of character.";
@@ -326,22 +333,29 @@ public class GameOfThrones extends CardGame {
         // 2: play the remaining nbPlayers * nbRounds - 2
         int remainingTurns = nbPlayers * nbRounds - 2;
         int nextPlayer = nextStartingPlayer + 2;
+        ArrayList<Card> cards = new ArrayList<>();
 
         while(remainingTurns > 0) {
             nextPlayer = getPlayerIndex(nextPlayer);
             setStatusText("Player" + nextPlayer + " select a non-Heart card to play.");
-            if (humanPlayers[nextPlayer]) {
-                waitForCorrectSuit(nextPlayer, false);
-            } else {
-                pickACorrectSuit(nextPlayer, false);
+            if (!players[nextPlayer].getClass().getName().equals("thrones.game.players.HumanPlayer")){
+                selected = players[nextPlayer].selectedCard(nextPlayer,false,hands);
+            }else {
+                waitForCorrectSuit(nextPlayer,false);
             }
-
             if (selected.isPresent()) {
                 setStatusText("Selected: " + canonical.canonical(selected.get()) + ". Player" + nextPlayer + " select a pile to play the card.");
-                if (humanPlayers[nextPlayer]) {
+                if (((Suit) selected.get().getSuit()).isMagic()){
+                    cards.add(selected.get());
+                }
+
+                if (players[nextPlayer].getClass().getName().equals("thrones.game.players.HumanPlayer")) {
                     waitForPileSelection();
                 } else {
-                    selectRandomPile();
+                    selectedPileIndex = players[nextPlayer].selectRandomPile(selected,nextPlayer,cards);
+                }
+                if (selectedPileIndex == -1){
+                    continue;
                 }
                 if (piles[selectedPileIndex].getNumberOfCards() == 1 && ((Suit) selected.get().getSuit()).isMagic() ){
                     continue;
@@ -399,7 +413,7 @@ public class GameOfThrones extends CardGame {
         delay(watchingTime);
     }
 
-    public GameOfThrones() {
+    public GameOfThrones(String[] s) {
         super(700, 700, 30);
 
         setTitle("Game of Thrones (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
@@ -407,6 +421,7 @@ public class GameOfThrones extends CardGame {
         initScore();
 
         setupGame();
+        setupPlayer(s);
         for (int i = 0; i < nbPlays; i++) {
             executeAPlay();
             updateScores();
@@ -446,7 +461,8 @@ public class GameOfThrones extends CardGame {
 //        GameOfThrones.seed = 130006;
         System.out.println("Seed = " + seed);
         GameOfThrones.random = new Random(seed);
-        new GameOfThrones();
+        String[] s = {"human","simple","random","smart"};
+        new GameOfThrones(s);
     }
 
 }
