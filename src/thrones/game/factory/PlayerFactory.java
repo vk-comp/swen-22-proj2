@@ -1,4 +1,4 @@
-package thrones.game;
+package thrones.game.factory;
 
 import thrones.game.players.*;
 

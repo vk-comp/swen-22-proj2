@@ -5,6 +5,9 @@ package thrones.game;
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
 import thrones.game.GoTCardRules.*;
+import thrones.game.controller.CanonicalController;
+import thrones.game.factory.ControllerFactory;
+import thrones.game.factory.PlayerFactory;
 
 
 import java.awt.Color;
@@ -17,8 +20,9 @@ public class GameOfThrones extends CardGame {
     /*
     Canonical String representations of Suit, Rank, Card, and Hand
     */
-    private Canonical canonical = new Canonical();
-
+    //private CanonicalController canonical = new CanonicalController();
+    private ControllerFactory controllerFactory = new ControllerFactory();
+    private CanonicalController canonical = controllerFactory.getCanonicalController();
     static public int seed;
     static Random random;
     private final String version = "1.0";
@@ -293,7 +297,7 @@ public class GameOfThrones extends CardGame {
     private int getPlayerIndex(int index) {
         return index % nbPlayers;
     }
-
+    PlayerFactory playerFactory = new PlayerFactory();
     private void executeAPlay() {
         resetPile();
         nextStartingPlayer = getPlayerIndex(nextStartingPlayer);
