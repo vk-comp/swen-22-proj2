@@ -7,7 +7,7 @@ import thrones.game.GoTCardRules.*;
 
 import java.util.stream.Collectors;
 
-public class Canonical {
+public class CanonicalController {
 
     public String canonical(Suit s) { return s.toString().substring(0, 1); }
 
