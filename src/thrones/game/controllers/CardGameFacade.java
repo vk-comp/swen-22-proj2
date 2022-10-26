@@ -1,4 +1,4 @@
-package thrones.game;
+package thrones.game.controllers;
 
 import ch.aplu.jcardgame.*;
 import thrones.game.GoTCardRules.*;

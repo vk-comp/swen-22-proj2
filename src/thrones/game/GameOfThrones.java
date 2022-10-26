@@ -5,7 +5,9 @@ package thrones.game;
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
 import thrones.game.GoTCardRules.*;
-import thrones.game.players.HumanPlayer;
+import thrones.game.controllers.Canonical;
+import thrones.game.controllers.CardGameFacade;
+import thrones.game.factory.PlayerFactory;
 import thrones.game.players.Player;
 
 
@@ -77,7 +79,6 @@ public class GameOfThrones extends CardGame {
             players[i] = pf.makePlayer(s[i]);
         }
     }
-
 
     private void initScore() {
         for (int i = 0; i < nbPlayers; i++) {
@@ -176,22 +177,6 @@ public class GameOfThrones extends CardGame {
         updatePileRanks();
     }
 
-//    private void pickACorrectSuit(int playerIndex, boolean isCharacter) {
-//        Hand currentHand = hands[playerIndex];
-//        List<Card> shortListCards = new ArrayList<>();
-//        for (int i = 0; i < currentHand.getCardList().size(); i++) {
-//            Card card = currentHand.getCardList().get(i);
-//            Suit suit = (Suit) card.getSuit();
-//            if (suit.isCharacter() == isCharacter) {
-//                shortListCards.add(card);
-//            }
-//        }
-//        if (shortListCards.isEmpty() || !isCharacter && random.nextInt(3) == 0) {
-//            selected = Optional.empty();
-//        } else {
-//            selected = Optional.of(shortListCards.get(random.nextInt(shortListCards.size())));
-//        }
-//    }
 
     private void selectRandomPile() {
         selectedPileIndex = random.nextInt(2);
